@@ -16,7 +16,20 @@ module Polycon
         ]
 
         def call(date:, professional:, name:, surname:, phone:, notes: nil)
-          warn "TODO: Implementar creación de un turno con fecha '#{date}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Appointment.fecha_correcta?(date)
+            if Polycon::Models::Appointment.posicionarme(professional)
+              if Polycon::Models::Appointment.crear(date, name, surname, phone, notes)
+                warn "Turno registrado con éxito"
+              else
+                warn "Ya hay una cita registrada con el profesional #{professional} para ese turno"
+              end
+            else
+              warn "El profesional #{professional} no existe"
+            end
+          else
+            warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
+          end
         end
       end
 
@@ -31,7 +44,21 @@ module Polycon
         ]
 
         def call(date:, professional:)
-          warn "TODO: Implementar detalles de un turno con fecha '#{date}' y profesional '#{professional}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Appointment.fecha_correcta?(date)
+            if Polycon::Models::Appointment.posicionarme(professional)
+              archivo = Polycon::Models::Appointment.mostrar(date)
+              if archivo != false
+                puts archivo
+              else
+                warn "El profesional #{professional} no tiene una cita registrada para la fecha #{date}"
+              end
+            else
+              warn "El profesional #{professional} no existe"  
+            end
+          else
+            warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
+          end
         end
       end
 
@@ -46,7 +73,20 @@ module Polycon
         ]
 
         def call(date:, professional:)
-          warn "TODO: Implementar borrado de un turno con fecha '#{date}' y profesional '#{professional}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Appointment.fecha_correcta?(date)
+            if Polycon::Models::Appointment.posicionarme(professional)
+              if Polycon::Models::Appointment.borrar(date)
+                warn "Se borro la cita para el profesional #{professional} con fecha #{date}"
+              else 
+                warn "El profesional #{professional} no tiene una cita registrada para la fecha #{date}"
+              end
+            else
+              warn "El profesional #{professional} no existe"  
+            end
+          else
+            warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
+          end
         end
       end
 
@@ -60,7 +100,20 @@ module Polycon
         ]
 
         def call(professional:)
-          warn "TODO: Implementar borrado de todos los turnos de la o el profesional '#{professional}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Appointment.fecha_correcta?(date)
+            if Polycon::Models::Appointment.posicionarme(professional)
+              if Polycon::Models::Appointment.cancelar_todo
+                warn "Se han cancelado todas las citas con el profesional #{professional}"
+              else
+                warn "El profesional #{professional} no tiene citas registradas"
+              end
+            else
+              warn "El profesional #{professional} no existe"  
+            end
+          else
+            warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
+          end
         end
       end
 
@@ -75,8 +128,24 @@ module Polycon
           '"Alma Estevez" --date="2021-09-16" # Lists appointments for Alma Estevez on the specified date'
         ]
 
-        def call(professional:)
-          warn "TODO: Implementar listado de turnos de la o el profesional '#{professional}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+        def call(professional:, date: nil)
+          Polycon::Utils.posicionar_en_polycon()
+          if date == nil || Polycon::Models::Appointment.fecha_correcta?(date, tipo = "Date") #circuito corto y solo chequeo fecha
+            if Polycon::Models::Appointment.posicionarme(professional)
+              result = Polycon::Models::Appointment.listar(date)
+              if result == 1
+                warn "El profesional #{professional} no tiene citas registradas"
+              elsif result == 2
+                warn "El profesional #{professional} no tiene citas registradas para la fecha #{date}"
+              else
+                result.each {|file| puts file.split(".")[0]} 
+              end
+            else
+              warn "El profesional #{professional} no existe"  
+            end
+          else
+            warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16"
+          end
         end
       end
 
@@ -92,7 +161,25 @@ module Polycon
         ]
 
         def call(old_date:, new_date:, professional:)
-          warn "TODO: Implementar cambio de fecha de turno con fecha '#{old_date}' para que pase a ser '#{new_date}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Appointment.fecha_correcta?(new_date) && Polycon::Models::Appointment.fecha_correcta?(old_date)
+            if Polycon::Models::Appointment.posicionarme(professional)
+              resul = Polycon::Models::Appointment.reprogramar(old_date,new_date)
+              if resul == 1
+                #duda: hay que decir si el profesional no tiene citas?
+                #o con aclarar que no hay cita para old_date está bien?
+                warn "El profesional #{professional} no tiene citas registradas para la fecha #{old_date}"
+              elsif resul == 2
+                warn "Ya hay una cita registrada con el profesional #{professional} para la fecha #{new_date}"
+              else
+                warn "Se ha reprogramado la cita con fecha #{old_date} con el profesional #{professional} para la nueva fecha #{new_date}"
+              end
+            else
+              warn "El profesional #{professional} no existe"  
+            end
+          else
+            warn "El formato de alguna de las fechas ingresadas es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
+          end
         end
       end
 
@@ -113,7 +200,23 @@ module Polycon
         ]
 
         def call(date:, professional:, **options)
-          warn "TODO: Implementar modificación de un turno de la o el profesional '#{professional}' con fecha '#{date}', para cambiarle la siguiente información: #{options}.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Appointment.fecha_correcta?(date)
+            if Polycon::Models::Appointment.posicionarme(professional)
+              archivo = Polycon::Models::Appointment.from_date(date)
+              if archivo != false
+                archivo.editar(options)
+                archivo.actualizar(date)
+                warn "Archivo editado con exito"
+              else
+                warn "El profesional #{professional} no tiene citas registradas para la fecha #{date}"
+              end
+            else 
+              warn "El profesional #{professional} no existe"  
+            end
+          else
+            warn "El formato de una de las fechas ingresadas es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
+          end
         end
       end
     end

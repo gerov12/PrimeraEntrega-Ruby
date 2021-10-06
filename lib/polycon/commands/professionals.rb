@@ -12,7 +12,12 @@ module Polycon
         ]
 
         def call(name:, **)
-          warn "TODO: Implementar creación de un o una profesional con nombre '#{name}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Professional.crear_profesional(name)
+            warn "Directorio #{name} creado con exito"
+          else
+            warn "Ya existe el diretorio #{name}"
+          end
         end
       end
 
@@ -27,7 +32,16 @@ module Polycon
         ]
 
         def call(name: nil)
-          warn "TODO: Implementar borrado de la o el profesional con nombre '#{name}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          if Polycon::Models::Professional.existe?(name)
+            if Polycon::Models::Professional.borrar(name)
+              warn "Se ha borrado al profesional #{name}"
+            else
+              warn "No se ha borrado al profesional ya que tiene turnos"
+            end
+          else
+            warn "El profesional #{name} no existe"
+          end
         end
       end
 
@@ -39,7 +53,13 @@ module Polycon
         ]
 
         def call(*)
-          warn "TODO: Implementar listado de profesionales.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          aux = Polycon::Models::Professional.listar()
+          if aux != nil
+            aux.each {|dir| puts dir}
+          else
+            warn "No hay profesionales cargados"
+          end
         end
       end
 
@@ -54,7 +74,15 @@ module Polycon
         ]
 
         def call(old_name:, new_name:, **)
-          warn "TODO: Implementar renombrado de profesionales con nombre '#{old_name}' para que pase a llamarse '#{new_name}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          Polycon::Utils.posicionar_en_polycon()
+          result = Polycon::Models::Professional.renombrar(old_name, new_name)
+          if result == 1
+            warn "El profesional #{old_name} no existe"
+          elsif result == 2
+            warn "Ya existe un profesional llamado #{new_name}"
+          else
+            warn "Cambió el nombre del profesional #{old_name} a #{new_name}"
+          end
         end
       end
     end
