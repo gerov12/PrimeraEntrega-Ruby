@@ -18,14 +18,18 @@ module Polycon
         def call(date:, professional:, name:, surname:, phone:, notes: nil)
           Polycon::Utils.posicionar_en_polycon()
           if Polycon::Models::Appointment.fecha_correcta?(date)
-            if Polycon::Models::Appointment.posicionarme(professional)
-              if Polycon::Models::Appointment.crear(date, name, surname, phone, notes)
-                warn "Turno registrado con éxito"
+            if Polycon::Models::Appointment.fecha_posterior?(date)
+              if Polycon::Models::Appointment.posicionarme(professional)
+                if Polycon::Models::Appointment.crear(date, name, surname, phone, notes)
+                  warn "Turno registrado con éxito"
+                else
+                  warn "Ya hay una cita registrada con el profesional #{professional} para ese turno"
+                end
               else
-                warn "Ya hay una cita registrada con el profesional #{professional} para ese turno"
+                warn "El profesional #{professional} no existe"
               end
             else
-              warn "El profesional #{professional} no existe"
+              warn "La fecha ingresada debe ser posterior a la fecha actual"
             end
           else
             warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
@@ -75,14 +79,18 @@ module Polycon
         def call(date:, professional:)
           Polycon::Utils.posicionar_en_polycon()
           if Polycon::Models::Appointment.fecha_correcta?(date)
-            if Polycon::Models::Appointment.posicionarme(professional)
-              if Polycon::Models::Appointment.borrar(date)
-                warn "Se borro la cita para el profesional #{professional} con fecha #{date}"
-              else 
-                warn "El profesional #{professional} no tiene una cita registrada para la fecha #{date}"
+            if Polycon::Models::Appointment.fecha_posterior?(date)
+              if Polycon::Models::Appointment.posicionarme(professional)
+                if Polycon::Models::Appointment.borrar(date)
+                  warn "Se borro la cita para el profesional #{professional} con fecha #{date}"
+                else 
+                  warn "El profesional #{professional} no tiene una cita registrada para la fecha #{date}"
+                end
+              else
+                warn "El profesional #{professional} no existe"  
               end
             else
-              warn "El profesional #{professional} no existe"  
+              warn "La fecha ingresada debe ser posterior a la fecha actual"
             end
           else
             warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
@@ -101,18 +109,17 @@ module Polycon
 
         def call(professional:)
           Polycon::Utils.posicionar_en_polycon()
-          if Polycon::Models::Appointment.fecha_correcta?(date)
-            if Polycon::Models::Appointment.posicionarme(professional)
-              if Polycon::Models::Appointment.cancelar_todo
-                warn "Se han cancelado todas las citas con el profesional #{professional}"
-              else
-                warn "El profesional #{professional} no tiene citas registradas"
-              end
+          if Polycon::Models::Appointment.posicionarme(professional)
+            result = Polycon::Models::Appointment.cancelar_todo
+            if result > 0
+              warn "Se han cancelado todas las futuras citas con el profesional #{professional} (#{result})"
+            elsif result == 0
+              warn "El profesional #{professional} no tiene futuras citas registradas"
             else
-              warn "El profesional #{professional} no existe"  
+              warn "El profesional #{professional} no tiene ninguna cita registrada"
             end
           else
-            warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16 13:00"
+            warn "El profesional #{professional} no existe"  
           end
         end
       end
@@ -163,19 +170,23 @@ module Polycon
         def call(old_date:, new_date:, professional:)
           Polycon::Utils.posicionar_en_polycon()
           if Polycon::Models::Appointment.fecha_correcta?(new_date) && Polycon::Models::Appointment.fecha_correcta?(old_date)
-            if Polycon::Models::Appointment.posicionarme(professional)
-              resul = Polycon::Models::Appointment.reprogramar(old_date,new_date)
-              if resul == 1
-                #duda: hay que decir si el profesional no tiene citas?
-                #o con aclarar que no hay cita para old_date está bien?
-                warn "El profesional #{professional} no tiene citas registradas para la fecha #{old_date}"
-              elsif resul == 2
-                warn "Ya hay una cita registrada con el profesional #{professional} para la fecha #{new_date}"
+            if Polycon::Models::Appointment.fecha_posterior?(new_date)
+              if Polycon::Models::Appointment.posicionarme(professional)
+                resul = Polycon::Models::Appointment.reprogramar(old_date,new_date)
+                if resul == 1
+                  #duda: hay que decir si el profesional no tiene citas?
+                  #o con aclarar que no hay cita para old_date está bien?
+                  warn "El profesional #{professional} no tiene citas registradas para la fecha #{old_date}"
+                elsif resul == 2
+                  warn "Ya hay una cita registrada con el profesional #{professional} para la fecha #{new_date}"
+                else
+                  warn "Se ha reprogramado la cita con fecha #{old_date} con el profesional #{professional} para la nueva fecha #{new_date}"
+                end
               else
-                warn "Se ha reprogramado la cita con fecha #{old_date} con el profesional #{professional} para la nueva fecha #{new_date}"
+                warn "El profesional #{professional} no existe"  
               end
             else
-              warn "El profesional #{professional} no existe"  
+              warn "La nueva fecha debe ser posterior a la fecha actual (Es decir la fecha del día actual. No se refiere a la fecha original de la cita)"
             end
           else
             warn "El formato de alguna de las fechas ingresadas es incorrecto\nEjemplo correcto: 2021-09-16 13:00"

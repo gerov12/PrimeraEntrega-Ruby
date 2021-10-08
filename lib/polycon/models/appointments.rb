@@ -1,3 +1,5 @@
+require 'date'
+
 module Polycon
     module Models
         class Appointment
@@ -9,6 +11,10 @@ module Polycon
                 else 
                     date =~ /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/ #el string no debe contener la hora
                 end
+            end
+
+            def self.fecha_posterior?(date)
+                date > DateTime.now.strftime("%Y-%m-%d %H:%M")
             end
 
             def self.from_date(date)
@@ -69,10 +75,20 @@ module Polycon
 
             def self.cancelar_todo()
                 if !Dir.empty?(".")
-                    Dir.each_child(".") {|file| File.delete(file)}
-                    true
+                    borrados = 0
+                    Dir.each_child(".") do |file| 
+                        if file.to_s > formatear_fecha(DateTime.now.strftime("%Y-%m-%d %H:%M"))
+                            File.delete(file)
+                            borrados +=1 
+                        end
+                    end
+                    if borrados > 0
+                        borrados #se cancelaron todos los proximos turnos
+                    else 
+                        0 #no se canceló ningun turno (no había proximos)
+                    end   
                 else
-                    false
+                    -1 #el profesional no tiene ningun turno cargado
                 end
             end
 

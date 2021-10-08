@@ -1,3 +1,5 @@
+require 'date'
+
 module Polycon
   module Models
     class Professional
@@ -38,9 +40,23 @@ module Polycon
           end
         end
 
+        def self.tiene_citas(name)
+          citas = 0
+          Dir.each_child("./#{name}") do |file| #para cada turno del directorio ./profesional
+            if file.to_s > Polycon::Models::Appointment.formatear_fecha(DateTime.now.strftime("%Y-%m-%d %H:%M"))
+              citas +=1 
+            end
+          end
+          if citas > 0
+            true #tiene citas futuras
+          else 
+            false #no tiene citas futuras
+          end
+        end
+
         def self.borrar(name)
-          if Dir.empty?(name)
-            Dir.rmdir(name)
+          if Dir.empty?(name) || !self.tiene_citas(name)
+            FileUtils.remove_dir(name)
             true
           else
             false
