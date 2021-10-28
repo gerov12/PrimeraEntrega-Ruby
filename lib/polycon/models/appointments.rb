@@ -3,7 +3,16 @@ require 'date'
 module Polycon
     module Models
         class Appointment
-            attr_accessor :surname , :name, :phone, :notes 
+            attr_accessor :professional, :date, :surname , :name, :phone, :notes 
+
+            def initialize(professional: nil, date: nil, name: nil, surname: nil, phone: nil, notes: nil)
+                @professional = professional
+                @date = date
+                @surname = surname
+                @name = name
+                @phone = phone
+                @notes = notes
+            end
 
             def self.fecha_correcta?(date, tipo = "DateTime")
                 if tipo == "DateTime"
@@ -15,75 +24,50 @@ module Polycon
 
             def self.fecha_posterior?(date)
                 date > DateTime.now.strftime("%Y-%m-%d %H:%M")
-            end
+            end    
 
-            def self.from_date(date)
-                appointment = new #self new, osea una instancia de Appointment
-                if File.exist?(formatear_fecha(date))
-                    File.open(formatear_fecha(date), 'r') do |f|
-                        appointment.surname = f.gets.chomp
-                        appointment.name = f.gets.chomp
-                        appointment.phone = f.gets.chomp
-                        appointment.notes = f.gets.chomp unless f.eof?
-                    end
-                    appointment
-                else
-                    false
-                end
-            end
-
-            def self.formatear_fecha(date)
+            def self.date_to_filename(date)
                 "#{date.gsub(" ", "_").gsub(":", "-")}.paf"
             end
 
-            def self.posicionarme(professional)
-                if Polycon::Models::Professional.existe?(professional)
-                    Dir.chdir(professional)
-                    true
+            def self.filename_to_date(filename)
+                aux = filename.to_s.split(".")[0].gsub("_", " ")
+                "#{aux.split(" ")[0]} #{aux.split(" ")[1].gsub("-",":")}"
+            end
+
+            def self.from_file(file, professional)
+                appointment = new #self new, osea una instancia de Appointment
+                appointment.professional = professional #profesional actual
+                appointment.date = self.filename_to_date(file) #la fecha sacada del nombre del archivo
+                Polycon::Store.load_appointment_from_file(file, appointment) #cargo el resto de los datos desde el archivo
+                appointment
+            end
+
+            def self.create(professional, date, name, surname, phone, notes)
+                if !Polycon::Store.exist_appointment?(professional, date)
+                    Polycon::Store.save_appointment(new(professional: professional, date: date, name: name, surname: surname, phone: phone, notes: notes))
                 else
                     false
                 end
             end
 
-            def self.crear(date, name, surname, phone, notes = nil)
-                if !File.exist?(formatear_fecha(date))
-                    File.open(formatear_fecha(date), "a+") do |turno|
-                        turno.write("#{surname}\n#{name}\n#{phone}\n#{notes}")
-                    end
-                    true
+            def self.find(professional, date)
+                if professional.appointments() != false
+                    professional.appointments().detect{|a| a.date == date}
                 else
-                    false
+                    nil
                 end
             end
 
-            def self.mostrar(date)
-                if File.exist?(formatear_fecha(date))
-                    File.read(formatear_fecha(date))
-                else
-                    false
-                end
+            def delete
+                Polycon::Store.delete_appointment(professional, date)
             end
 
-            def self.borrar(date)
-                if File.exist?(formatear_fecha(date))
-                     File.delete(formatear_fecha(date))
-                    true
-                else
-                    false
-                end
-            end
-
-            def self.cancelar_todo()
-                if !Dir.empty?(".")
-                    borrados = 0
-                    Dir.each_child(".") do |file| 
-                        if file.to_s > formatear_fecha(DateTime.now.strftime("%Y-%m-%d %H:%M"))
-                            File.delete(file)
-                            borrados +=1 
-                        end
-                    end
-                    if borrados > 0
-                        borrados #se cancelaron todos los proximos turnos
+            def self.cancel_all(professional)
+                if professional.appointments != false
+                    deleted = Polycon::Store.empty_professional(professional)
+                    if deleted > 0
+                        deleted #se cancelaron todos los proximos turnos
                     else 
                         0 #no se canceló ningun turno (no había proximos)
                     end   
@@ -92,57 +76,21 @@ module Polycon
                 end
             end
 
-            def self.listar(date)
-                if !Dir.empty?(".")
-                    if date == nil
-                        Dir.each_child(".") #retorno los archivos
-                    else
-                        arreglo = []
-                        Dir.each_child(".") do |file| 
-                            if file.to_s.split("_")[0] == date
-                                arreglo << file
-                            end
-                        end
-                        if arreglo.length > 0
-                            arreglo #retorno los archivos
-                        else
-                            2 #no hay archivos para esa fecha
-                        end
-                    end
+            def reschedule(new_date)
+                if professional.appointment_on_datetime(new_date).nil?
+                    Polycon::Store.reschedule_appointment(professional, date, new_date)
+                    date = new_date
                 else
-                    1 #no hay archivos
+                   false
                 end
             end
 
-            def self.reprogramar(old_date,new_date)
-                if File.exist?(formatear_fecha(old_date))
-                    if !File.exist?(formatear_fecha(new_date))
-                        File.rename(formatear_fecha(old_date), formatear_fecha(new_date))
-                        0
-                    else
-                        2
-                    end
-               else
-                   1
-               end
-            end
-
-            def editar(options)
+            def edit(options) #actualizo los atributos
                 options.each do |key,value|
                     self.send(:"#{key}=", value) #uso los setters para cargar los datos nuevos
                 end
+                Polycon::Store.update_appointment_file(self)
             end
-
-            def actualizar(date)
-                path = "#{date.gsub(" ", "_").gsub(":", "-")}.paf"
-                File.open(path, 'w') do |f|
-                    f << "#{surname}\n" #uso los getters
-                    f << "#{name}\n"
-                    f << "#{phone}\n"
-                    f << "#{notes}"
-                end
-            end
-
         end
     end
 end

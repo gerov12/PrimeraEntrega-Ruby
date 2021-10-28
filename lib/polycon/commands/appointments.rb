@@ -16,11 +16,11 @@ module Polycon
         ]
 
         def call(date:, professional:, name:, surname:, phone:, notes: nil)
-          Polycon::Utils.posicionar_en_polycon()
           if Polycon::Models::Appointment.fecha_correcta?(date)
             if Polycon::Models::Appointment.fecha_posterior?(date)
-              if Polycon::Models::Appointment.posicionarme(professional)
-                if Polycon::Models::Appointment.crear(date, name, surname, phone, notes)
+              prof = Polycon::Models::Professional.find(professional)
+              if !prof.nil?
+                if Polycon::Models::Appointment.create(prof, date, name, surname, phone, notes)
                   warn "Turno registrado con éxito"
                 else
                   warn "Ya hay una cita registrada con el profesional #{professional} para ese turno"
@@ -47,13 +47,16 @@ module Polycon
           '"2021-09-16 13:00" --professional="Alma Estevez" # Shows information for the appointment with Alma Estevez on the specified date and time'
         ]
 
-        def call(date:, professional:)
-          Polycon::Utils.posicionar_en_polycon()
+        def call(date:, professional:)  
           if Polycon::Models::Appointment.fecha_correcta?(date)
-            if Polycon::Models::Appointment.posicionarme(professional)
-              archivo = Polycon::Models::Appointment.mostrar(date)
-              if archivo != false
-                puts archivo
+            prof = Polycon::Models::Professional.find(professional)
+            if !prof.nil?
+              appt = Polycon::Models::Appointment.find(prof, date)
+              if !appt.nil?
+                puts appt.surname
+                puts appt.name
+                puts appt.phone
+                puts appt.notes unless appt.notes.nil?
               else
                 warn "El profesional #{professional} no tiene una cita registrada para la fecha #{date}"
               end
@@ -77,11 +80,13 @@ module Polycon
         ]
 
         def call(date:, professional:)
-          Polycon::Utils.posicionar_en_polycon()
           if Polycon::Models::Appointment.fecha_correcta?(date)
             if Polycon::Models::Appointment.fecha_posterior?(date)
-              if Polycon::Models::Appointment.posicionarme(professional)
-                if Polycon::Models::Appointment.borrar(date)
+              prof = Polycon::Models::Professional.find(professional)
+              if prof != nil
+                appt = Polycon::Models::Appointment.find(prof, date)
+                if !appt.nil?
+                  appt.delete()
                   warn "Se borro la cita para el profesional #{professional} con fecha #{date}"
                 else 
                   warn "El profesional #{professional} no tiene una cita registrada para la fecha #{date}"
@@ -108,9 +113,9 @@ module Polycon
         ]
 
         def call(professional:)
-          Polycon::Utils.posicionar_en_polycon()
-          if Polycon::Models::Appointment.posicionarme(professional)
-            result = Polycon::Models::Appointment.cancelar_todo
+          prof = Polycon::Models::Professional.find(professional)
+          if prof != nil
+            result = Polycon::Models::Appointment.cancel_all(prof)
             if result > 0
               warn "Se han cancelado todas las futuras citas con el profesional #{professional} (#{result})"
             elsif result == 0
@@ -136,22 +141,33 @@ module Polycon
         ]
 
         def call(professional:, date: nil)
-          Polycon::Utils.posicionar_en_polycon()
-          if date == nil || Polycon::Models::Appointment.fecha_correcta?(date, tipo = "Date") #circuito corto y solo chequeo fecha
-            if Polycon::Models::Appointment.posicionarme(professional)
-              result = Polycon::Models::Appointment.listar(date)
-              if result == 1
-                warn "El profesional #{professional} no tiene citas registradas"
-              elsif result == 2
-                warn "El profesional #{professional} no tiene citas registradas para la fecha #{date}"
-              else
-                result.each {|file| puts file.split(".")[0]} 
-              end
+          prof = Polycon::Models::Professional.find(professional)
+          if prof != nil
+            if date == nil
+              resul = prof.appointments()
             else
-              warn "El profesional #{professional} no existe"  
+              if Polycon::Models::Appointment.fecha_correcta?(date, tipo = "Date") #circuito corto y solo chequeo fecha
+                resul = prof.appointments_on_date(date)
+              else
+                warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16"
+                resul = -1 #indico que no se ejecutó ningun metodo de prof
+              end
             end
+            
+            if resul != -1 #si se ejecutó algún metodo de prof
+              if resul != false
+                if resul.length > 0
+                  resul.each {|a| puts "#{a.date} (#{a.surname} #{a.name})"} 
+                else
+                  warn "El profesional #{professional} no tiene citas registradas para la fecha #{date}"
+                end  
+              else
+                warn "El profesional #{professional} no tiene citas registradas"
+              end
+            end
+        
           else
-            warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16"
+            warn "El profesional #{professional} no existe"  
           end
         end
       end
@@ -168,19 +184,22 @@ module Polycon
         ]
 
         def call(old_date:, new_date:, professional:)
-          Polycon::Utils.posicionar_en_polycon()
           if Polycon::Models::Appointment.fecha_correcta?(new_date) && Polycon::Models::Appointment.fecha_correcta?(old_date)
             if Polycon::Models::Appointment.fecha_posterior?(new_date)
-              if Polycon::Models::Appointment.posicionarme(professional)
-                resul = Polycon::Models::Appointment.reprogramar(old_date,new_date)
-                if resul == 1
-                  #duda: hay que decir si el profesional no tiene citas?
-                  #o con aclarar que no hay cita para old_date está bien?
+              prof = Polycon::Models::Professional.find(professional)
+              if prof != nil
+                old_appt = prof.appointment_on_datetime(old_date)
+                if old_appt == nil
                   warn "El profesional #{professional} no tiene citas registradas para la fecha #{old_date}"
-                elsif resul == 2
-                  warn "Ya hay una cita registrada con el profesional #{professional} para la fecha #{new_date}"
+                elsif old_appt == false
+                  warn "El profesional #{professional} no tiene citas programadas"
                 else
-                  warn "Se ha reprogramado la cita con fecha #{old_date} con el profesional #{professional} para la nueva fecha #{new_date}"
+                  resul = old_appt.reschedule(new_date)
+                  if resul == false
+                    warn "Ya hay una cita registrada con el profesional #{professional} para la fecha #{new_date}"
+                  else
+                    warn "Se ha reprogramado la cita con fecha #{old_date} con el profesional #{professional} para la nueva fecha #{new_date}"
+                  end
                 end
               else
                 warn "El profesional #{professional} no existe"  
@@ -211,13 +230,12 @@ module Polycon
         ]
 
         def call(date:, professional:, **options)
-          Polycon::Utils.posicionar_en_polycon()
           if Polycon::Models::Appointment.fecha_correcta?(date)
-            if Polycon::Models::Appointment.posicionarme(professional)
-              archivo = Polycon::Models::Appointment.from_date(date)
-              if archivo != false
-                archivo.editar(options)
-                archivo.actualizar(date)
+            prof = Polycon::Models::Professional.find(professional)
+            if prof != nil
+              appt = Polycon::Models::Appointment.find(prof, date)
+              if !appt.nil?
+                appt.edit(options)
                 warn "Archivo editado con exito"
               else
                 warn "El profesional #{professional} no tiene citas registradas para la fecha #{date}"

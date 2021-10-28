@@ -12,8 +12,8 @@ module Polycon
         ]
 
         def call(name:, **)
-          Polycon::Utils.posicionar_en_polycon()
-          if Polycon::Models::Professional.crear_profesional(name)
+          if !Polycon::Store.exist_professional?(name)
+            Polycon::Models::Professional.create_directory_professional(name)
             warn "Directorio #{name} creado con exito"
           else
             warn "Ya existe el diretorio #{name}"
@@ -32,12 +32,12 @@ module Polycon
         ]
 
         def call(name: nil)
-          Polycon::Utils.posicionar_en_polycon()
-          if Polycon::Models::Professional.existe?(name)
-            if Polycon::Models::Professional.borrar(name)
+          prof = Polycon::Models::Professional.find(name)
+          if prof != nil
+            if prof.delete
               warn "Se ha borrado al profesional #{name}"
             else
-              warn "No se ha borrado al profesional ya que tiene turnos"
+              warn "No se ha borrado al profesional ya que tiene turnos pendientes"
             end
           else
             warn "El profesional #{name} no existe"
@@ -53,10 +53,9 @@ module Polycon
         ]
 
         def call(*)
-          Polycon::Utils.posicionar_en_polycon()
-          aux = Polycon::Models::Professional.listar()
+          aux = Polycon::Models::Professional.list()
           if aux != nil
-            aux.each {|dir| puts dir}
+            aux.each {|prof| puts prof.name}
           else
             warn "No hay profesionales cargados"
           end
@@ -74,14 +73,20 @@ module Polycon
         ]
 
         def call(old_name:, new_name:, **)
-          Polycon::Utils.posicionar_en_polycon()
-          result = Polycon::Models::Professional.renombrar(old_name, new_name)
-          if result == 1
-            warn "El profesional #{old_name} no existe"
-          elsif result == 2
-            warn "Ya existe un profesional llamado #{new_name}"
+          prof = Polycon::Models::Professional.find(old_name)
+          if prof != nil
+            if prof.name != new_name
+              if Polycon::Models::Professional.find(new_name) == nil
+                prof.rename(new_name)
+                warn "Cambió el nombre del profesional #{old_name} a #{new_name}"
+              else
+                warn "Ya existe un profesional llamado #{new_name}"
+              end
+            else
+              warn "El nuevo nombre debe ser distinto del actual"
+            end
           else
-            warn "Cambió el nombre del profesional #{old_name} a #{new_name}"
+            warn "El profesional #{old_name} no existe"
           end
         end
       end

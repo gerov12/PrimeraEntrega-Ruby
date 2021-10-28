@@ -3,6 +3,9 @@ module Polycon
   autoload :Commands, 'polycon/commands'
   autoload :Models, 'polycon/models'
   autoload :Utils, 'polycon/utils'
+  autoload :Store, 'polycon/store'
+  autoload :Week, 'polycon/grilla_week'
+  autoload :Day, 'polycon/grilla_day'
 
   # Agregar aquí cualquier autoload que sea necesario para que se cargue las clases y
   # módulos del modelo de datos.

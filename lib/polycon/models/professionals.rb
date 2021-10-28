@@ -2,66 +2,94 @@ require 'date'
 
 module Polycon
   module Models
-    class Professional
-        def self.existe?(name)
-          if Dir.exist?(name)
-            true
-          else
-            false
-          end 
-        end
+    class Professional  
+      attr_accessor :name
 
-        def self.crear_profesional(name)
-          if !self.existe?(name)
-            Dir.mkdir(name)
-            true
-          else
-            false
-          end   
-        end
+      def initialize(name)
+        @name = name
+      end
 
-        def self.listar
-          if !Dir.empty?(".")
-            Dir.each_child(".") 
-          else
-            nil
+      def self.find(name)
+        professional = new(name)
+        return professional if professional.exists?
+      end
+
+      def exists?
+        Polycon::Store.exist_professional?(name)
+      end
+
+      def self.create_directory_professional(name)
+        Polycon::Store.save_professional(new(name))
+      end
+
+      def appointments #metodo de instancia, name es el name de la instancia
+        appts = Polycon::Store.appointments(name)
+        if appts.any?
+          appts.map do |a|
+            Polycon::Models::Appointment.from_file(a, self) #retorna las instancias de Appointment
           end
+        else
+          false
         end
+      end
 
-        def self.renombrar(old_name, new_name)
-          if self.existe?(old_name)
-            if !self.existe?(new_name)
-              File.rename(old_name, new_name)
-            else
-              2 #ya existe el new_name
-            end
-          else
-            1 #no existe old_name
-          end
-        end
+      def has_appointments_post?
+        !appointments.select do |appointment|
+          appointment.date > Time.now.strftime("%Y-%m-%d %H:%M")
+        end.empty?
+        #devuelve si la lista de appointments para este profesional con fecha posterior a la actual
+        #no es vacía
+      end
 
-        def self.tiene_citas(name)
-          citas = 0
-          Dir.each_child("./#{name}") do |file| #para cada turno del directorio ./profesional
-            if file.to_s > Polycon::Models::Appointment.formatear_fecha(DateTime.now.strftime("%Y-%m-%d %H:%M"))
-              citas +=1 
-            end
-          end
-          if citas > 0
-            true #tiene citas futuras
-          else 
-            false #no tiene citas futuras
-          end
-        end
+      def has_appointments?
+        appointments != false
+        #devuelve si la lista de appointments para este profesional no es vacía
+      end
 
-        def self.borrar(name)
-          if Dir.empty?(name) || !self.tiene_citas(name)
-            FileUtils.remove_dir(name)
-            true
-          else
-            false
-          end 
+      def appointments_on_date(date)
+        if self.has_appointments?
+          appointments.select do |appointment|
+            appointment.date.to_s.split(" ")[0] == date #tomo solo la fecha de la fecha-hora del appointment para comparar
+          end
+        else
+          false # indica que el profesional no tiene ninguna cita
         end
+      end
+
+      def appointment_on_datetime(date)
+        if self.has_appointments?
+          appointments.detect do |appointment| #detect toma solo un elemento
+            appointment.date == date 
+          end
+        else
+          false # indica que el profesional no tiene ninguna cita
+        end
+      end
+
+      def self.list
+        profs = Polycon::Store.professionals()
+        if profs != nil
+          profs.map do |prof|
+            self.find(prof) #retorno las instancias de Professional
+          end
+        else
+          nil
+        end
+      end
+
+      def rename(new_name)
+        Polycon::Store.rename_professional(name, new_name)
+        name = new_name
+      end
+
+      def delete
+        if !has_appointments_post?
+          Polycon::Store.delete_professional(name)
+          true
+        else
+          false
+        end 
+      end
     end
   end
 end
