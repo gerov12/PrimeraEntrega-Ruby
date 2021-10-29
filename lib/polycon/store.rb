@@ -88,5 +88,12 @@ module Polycon
             filename = Polycon::Models::Appointment.date_to_filename(date)
             FileUtils.remove_dir(self.root_path + "/#{professional.name}/#{filename}")
         end
+
+        #TABLES
+
+        def self.save_table(table, filename)
+            FileUtils.mkdir_p Dir.home + '/tables'
+            File.write(Dir.home + "/tables/#{filename}.html", table)
+        end
     end
 end

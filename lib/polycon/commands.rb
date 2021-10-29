@@ -2,7 +2,7 @@ module Polycon
   module Commands
     autoload :Professionals, 'polycon/commands/professionals'
     autoload :Appointments, 'polycon/commands/appointments'
-    autoload :Grillas, 'polycon/commands/grillas'
+    autoload :Tables, 'polycon/commands/tables'
     autoload :Version, 'polycon/commands/version'
 
     extend Dry::CLI::Registry
@@ -24,8 +24,8 @@ module Polycon
       prefix.register 'cancel-all', Appointments::CancelAll
     end
     
-    register 'grillas', aliases: ['g'] do |prefix|
-      prefix.register 'create', Grillas::Create   
+    register 'tables', aliases: ['t'] do |prefix|
+      prefix.register 'create', Tables::Create   
     end
 
     register 'version', Version, aliases: ['v', '-v', '--version']
