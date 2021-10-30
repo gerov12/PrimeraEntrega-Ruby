@@ -35,8 +35,10 @@ La sintaxis del comando es la siguiente:
 table (o "t" en su forma abreviada) create "yyyy-mm-dd" --professional="nombre profesional" --type="day/week"
 ```
 La opción `--professional` no es obligatoria, permitiendo (en caso de no utilizarla) mostrar en la grilla resultante los turnos que se correspondan al periodo de tiempo indicado de todos los profesionales existentes en el sistema.
+
 En cuanto a la opcion `--type`, esta es obligatoria (al igual que el argumento inicial que indica una fecha) y debe ser **"day"** o **"week"**.
 > `"day"` indica que se listarán solo los turnos correspondientes al día indicado.
+> 
 > `"week"` indica que se listarán los turnos correspondientes a la semana de la cual el día indicado forma parte.
 
 El comando, al igual que los demás comandos de la aplicación, se encuentra registrado en el archivo *commands.rb* ubicado en el directorio Polycon.
@@ -58,9 +60,11 @@ Además, la gracias a la clase Store y el manejo de objetos, ya no es necesario 
 - Los nombres de los archivos HTML que contienen las grillas siguen el siguiente formato: 
   - *Grillas tipo "Week"*:
     Si se seleccionó un profesional → "nombre_yyyy-mm-dd_week.html"
+    
     Si no se seleccionó un profesional → "yyyy-mm-dd_week.html"
   - *Grillas tipo "Day"*:
     Si se seleccionó un profesional → "nombre_yyyy-mm-dd_day.html"
+    
     Si no se seleccionó un profesional → "yyyy-mm-dd_day.html" 
 - Se asume que los horarios creados los turnos se encontrarán en un rango horario entre las 8:00hs y las 16:00hs, con una diferencia de 15 minutos entre cada turno (ej: 08:00, 08:15, 08:30, etc.) 
 - La semana creada a partir de una fecha al crear una grilla tipo "week" va desde el día lunes al día domingo. Por ejemplo, si la  fecha indicada es "2021-10-30" (sábado), la semana irá desde el lunes 25 hasta el domingo 31.
