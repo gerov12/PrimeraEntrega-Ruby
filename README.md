@@ -68,5 +68,5 @@ Además, gracias a la clase Store y el manejo de objetos, ya no es necesario el 
     Si se seleccionó un profesional → "nombre_yyyy-mm-dd_day.html"
     
     Si no se seleccionó un profesional → "yyyy-mm-dd_day.html" 
-- Se asume que los horarios creados los turnos se encontrarán en un rango horario entre las 8:00hs y las 16:00hs, con una diferencia de 15 minutos entre cada turno (ej: 08:00, 08:15, 08:30, etc.) 
+- Se asume que los horarios de los turnos creados se encontrarán en un rango horario entre las 8:00hs y las 16:00hs, con una diferencia de 15 minutos entre cada turno (ej: 08:00, 08:15, 08:30, etc.) 
 - La semana creada a partir de una fecha al crear una grilla tipo "week" va desde el día lunes al día domingo. Por ejemplo, si la  fecha indicada es "2021-10-30" (sábado), la semana irá desde el lunes 25 hasta el domingo 31.
