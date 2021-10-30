@@ -29,7 +29,7 @@ La principal modificación realizada para esta entrega fue el pasaje a objetos d
 Además tanto directorios como archivos sufrieron modificaciónes:
 
 ###### Directorio commands:
-Se agregó el archivo correspondiente a tables, el cual contiene su respectivo modulo. Este, al igual que todos los archivos de este directorio, forma parte del modulo Commands y contiene una subclase de la clase Command llamada Create, la cual representa al comando (llamado de igual manera) que permite crear un nuevo archivo HTML con la grilla correspondiente según las opciones pasadas al parametro.
+Se agregó el archivo **tables.rb**, el cual contiene su respectivo modulo. Este, al igual que todos los modulos de este directorio, forma parte del modulo Commands y contiene una subclase de la clase Command llamada Create, la cual representa al comando (llamado de igual manera) que permite crear un nuevo archivo HTML con la grilla correspondiente según las opciones pasadas al parametro.
 La sintaxis del comando es la siguiente:
 ```
 table (o "t" en su forma abreviada) create "yyyy-mm-dd" --professional="nombre profesional" --type="day/week"
