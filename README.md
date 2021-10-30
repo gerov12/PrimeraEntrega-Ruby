@@ -34,14 +34,14 @@ La sintaxis del comando es la siguiente:
 ```
 table (o "t" en su forma abreviada) create "yyyy-mm-dd" --professional="nombre profesional" --type="day/week"
 ```
-La opción `--professional` no es obligatoria, permitiendo (en caso de no utilizarla) mostrar en la grilla resultante los turnos que se correspondan al periodo de tiempo indicado de todos los profesionales existentes en el sistema.
+La opción `--professional` no es obligatoria, permitiendo (en caso de no utilizarla) mostrar en la grilla resultante los turnos de todos los profesionales existentes en el sistema que se correspondan al periodo de tiempo indicado.
 
 En cuanto a la opcion `--type`, esta es obligatoria (al igual que el argumento inicial que indica una fecha) y debe ser **"day"** o **"week"**.
 > `"day"` indica que se listarán solo los turnos correspondientes al día indicado.
 > 
 > `"week"` indica que se listarán los turnos correspondientes a la semana de la cual el día indicado forma parte.
 
-El comando, al igual que los demás comandos de la aplicación, se encuentra registrado en el archivo *commands.rb* ubicado en el directorio Polycon.
+El comando *create*, al igual que los demás comandos de la aplicación, se encuentra registrado en el archivo *commands.rb* ubicado en el directorio Polycon.
 
 ###### Directorio tables:
 En este directorio se encuentran los archivos *"table_day"* y *"table_week"*. Estos archivos contienen a las clases **Day** y **Week** respectivamente, las cuales forman parte del **modulo Tables** (que a su vez forma parte del **modulo Polycon**) y permiten crear las grillas según los parametros indicados por el usuario al ejecutar el comando *t create*.
@@ -54,7 +54,7 @@ En este directorio se agregaron dos archivos:
 El primero es el archivo **tables.rb**, el cual permite que se carguen las clases *Week* y *Day* correspondientes al modulo Tables (de la misma forma que el archivo *models.rb* carga las clases *Professional* y *Appointment*).
 
 El segundo archivo es **store.rb**. En este archivo se encuentra toda la lógica relacionada a guardar y recuperar los "objetos" de la aplicación (por ejemplo, recuperar a todos los profesionales, actualizar un appointment, guardar una grilla, etc.); esto permite que las clases se desliguen del manejo de archivos y directorios, delegandolo a la clase **Store**.
-Además, la gracias a la clase Store y el manejo de objetos, ya no es necesario el **modulo Utils**, por lo cual se eliminó.
+Además, gracias a la clase Store y el manejo de objetos, ya no es necesario el **modulo Utils**, por lo cual se eliminó.
 
 ###### Elecciones de diseño (no definidas en el enunciado original):
 - Los nombres de los archivos HTML que contienen las grillas siguen el siguiente formato: 
