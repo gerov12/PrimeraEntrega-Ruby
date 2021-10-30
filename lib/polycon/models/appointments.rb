@@ -14,15 +14,15 @@ module Polycon
                 @notes = notes
             end
 
-            def self.fecha_correcta?(date, tipo = "DateTime")
-                if tipo == "DateTime"
+            def self.correct_date?(date, type = "DateTime")
+                if type == "DateTime"
                     date =~ /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\s(0[0-9]|1[0-9]|2[0-3]):(0[0-9]|[1-5][0-9])$/
                 else 
                     date =~ /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/ #el string no debe contener la hora
                 end
             end
 
-            def self.fecha_posterior?(date)
+            def self.later_date?(date)
                 date > DateTime.now.strftime("%Y-%m-%d %H:%M")
             end    
 

@@ -2,16 +2,17 @@ module Polycon
     module Commands
       module Tables
         class Create < Dry::CLI::Command
-            desc 'Crea una grilla de turnos'
+            desc 'Creates a table which represents a appointments grid'
 
-            argument :date, required: true, desc: 'Fecha a partir de la cual se mostrará la grilla'
-            option :professional, required: false, desc: 'Nombre del profesional'
-            option :type, required: true, desc: "Indica si la grilla es para un día o una semana"
+            argument :date, required: true, desc: 'Date from which the table will be created'
+            option :professional, required: false, desc: 'Professional whom the the displayed appointments will belong'
+            option :type, required: true, desc: 'Indicates if the table correspond to a day or a week'
 
             example [
-                '"2021-09-16" # Muestra todos los turnos de la semana del 16/9/21',
-                '"2021-09-16" --professional="Alma Estevez" # Muestra todos los turnos de Alma Estevez en la semana del 16/9/21',
-                '"2021-09-16" --professional="Alma Estevez" --tipo="day" # Muestra todos los turnos de Alma Estevez en el día 16/9/21'
+                '"2021-09-16" --type="week" # Show all the appointments for the week of 16/9/21',
+                '"2021-09-16" --professional="Alma Estevez" --type="week" # Show all the appointments corresponding to the professional Alma Estevez in the week of 16/9/21',
+                '"2021-09-16" --type="day" # Show all the appointments from 16/9/21',
+                '"2021-09-16" --professional="Alma Estevez" --type="day" # Show all the appointments of 16/9/21 corresponding to the professional Alma Estevez'
             ]
 
             def call(date:, professional: nil, type:)

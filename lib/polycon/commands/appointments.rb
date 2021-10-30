@@ -16,8 +16,8 @@ module Polycon
         ]
 
         def call(date:, professional:, name:, surname:, phone:, notes: nil)
-          if Polycon::Models::Appointment.fecha_correcta?(date)
-            if Polycon::Models::Appointment.fecha_posterior?(date)
+          if Polycon::Models::Appointment.correct_date?(date)
+            if Polycon::Models::Appointment.later_date?(date)
               prof = Polycon::Models::Professional.find(professional)
               if !prof.nil?
                 if Polycon::Models::Appointment.create(prof, date, name, surname, phone, notes)
@@ -48,15 +48,15 @@ module Polycon
         ]
 
         def call(date:, professional:)  
-          if Polycon::Models::Appointment.fecha_correcta?(date)
+          if Polycon::Models::Appointment.correct_date?(date)
             prof = Polycon::Models::Professional.find(professional)
             if !prof.nil?
               appt = Polycon::Models::Appointment.find(prof, date)
               if !appt.nil?
-                puts appt.surname
-                puts appt.name
-                puts appt.phone
-                puts appt.notes unless appt.notes.nil?
+                puts "Apellido: #{appt.surname}"
+                puts "Nombre: #{appt.name}"
+                puts "Teléfono: #{appt.phone}"
+                puts "Notas: #{appt.notes}" unless appt.notes.nil?
               else
                 warn "El profesional #{professional} no tiene una cita registrada para la fecha #{date}"
               end
@@ -80,10 +80,10 @@ module Polycon
         ]
 
         def call(date:, professional:)
-          if Polycon::Models::Appointment.fecha_correcta?(date)
-            if Polycon::Models::Appointment.fecha_posterior?(date)
+          if Polycon::Models::Appointment.correct_date?(date)
+            if Polycon::Models::Appointment.later_date?(date)
               prof = Polycon::Models::Professional.find(professional)
-              if prof != nil
+              if !prof.nil?
                 appt = Polycon::Models::Appointment.find(prof, date)
                 if !appt.nil?
                   appt.delete()
@@ -114,7 +114,7 @@ module Polycon
 
         def call(professional:)
           prof = Polycon::Models::Professional.find(professional)
-          if prof != nil
+          if !prof.nil?
             result = Polycon::Models::Appointment.cancel_all(prof)
             if result > 0
               warn "Se han cancelado todas las futuras citas con el profesional #{professional} (#{result})"
@@ -142,11 +142,11 @@ module Polycon
 
         def call(professional:, date: nil)
           prof = Polycon::Models::Professional.find(professional)
-          if prof != nil
+          if !prof.nil?
             if date == nil
               resul = prof.appointments()
             else
-              if Polycon::Models::Appointment.fecha_correcta?(date, tipo = "Date") #circuito corto y solo chequeo fecha
+              if Polycon::Models::Appointment.correct_date?(date, tipo = "Date") #circuito corto y solo chequeo fecha
                 resul = prof.appointments_on_date(date)
               else
                 warn "El formato de la fecha ingresada es incorrecto\nEjemplo correcto: 2021-09-16"
@@ -184,10 +184,10 @@ module Polycon
         ]
 
         def call(old_date:, new_date:, professional:)
-          if Polycon::Models::Appointment.fecha_correcta?(new_date) && Polycon::Models::Appointment.fecha_correcta?(old_date)
-            if Polycon::Models::Appointment.fecha_posterior?(new_date)
+          if Polycon::Models::Appointment.correct_date?(new_date) && Polycon::Models::Appointment.correct_date?(old_date)
+            if Polycon::Models::Appointment.later_date?(new_date)
               prof = Polycon::Models::Professional.find(professional)
-              if prof != nil
+              if !prof.nil?
                 old_appt = prof.appointment_on_datetime(old_date)
                 if old_appt == nil
                   warn "El profesional #{professional} no tiene citas registradas para la fecha #{old_date}"
@@ -230,9 +230,9 @@ module Polycon
         ]
 
         def call(date:, professional:, **options)
-          if Polycon::Models::Appointment.fecha_correcta?(date)
+          if Polycon::Models::Appointment.correct_date?(date)
             prof = Polycon::Models::Professional.find(professional)
-            if prof != nil
+            if !prof.nil?
               appt = Polycon::Models::Appointment.find(prof, date)
               if !appt.nil?
                 appt.edit(options)

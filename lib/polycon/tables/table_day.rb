@@ -41,7 +41,7 @@ module Polycon
       end
 
       def self.create(date, professional)
-        if Polycon::Models::Appointment.fecha_correcta?(date, tipo = "Date") #circuito corto y solo chequeo fecha
+        if Polycon::Models::Appointment.correct_date?(date, tipo = "Date") #circuito corto y solo chequeo fecha
           appointments = []
           if professional.nil?
             professionals = Polycon::Models::Professional.list()
@@ -57,7 +57,7 @@ module Polycon
             filename = "#{date}_day"
           else
             prof = Polycon::Models::Professional.find(professional)
-            if prof != nil
+            if !prof.nil?
               aux = prof.appointments_on_date(date)
               if aux != false && !aux.nil? #si hay turnos para esa fecha
                 aux.each {|a| appointments << a}

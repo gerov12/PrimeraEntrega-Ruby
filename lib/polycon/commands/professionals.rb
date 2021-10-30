@@ -33,7 +33,7 @@ module Polycon
 
         def call(name: nil)
           prof = Polycon::Models::Professional.find(name)
-          if prof != nil
+          if !prof.nil?
             if prof.delete
               warn "Se ha borrado al profesional #{name}"
             else
@@ -74,7 +74,7 @@ module Polycon
 
         def call(old_name:, new_name:, **)
           prof = Polycon::Models::Professional.find(old_name)
-          if prof != nil
+          if !prof.nil?
             if prof.name != new_name
               if Polycon::Models::Professional.find(new_name) == nil
                 prof.rename(new_name)

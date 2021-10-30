@@ -79,7 +79,7 @@ module Polycon
       end
 
       def self.create(date, professional)
-        if Polycon::Models::Appointment.fecha_correcta?(date, tipo = "Date") #circuito corto y solo chequeo fecha
+        if Polycon::Models::Appointment.correct_date?(date, tipo = "Date") #circuito corto y solo chequeo fecha
           appointments = []
           week = self.get_week(date)
           if professional.nil?

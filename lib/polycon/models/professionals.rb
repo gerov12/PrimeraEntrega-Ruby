@@ -34,11 +34,15 @@ module Polycon
       end
 
       def has_appointments_post?
-        !appointments.select do |appointment|
-          appointment.date > Time.now.strftime("%Y-%m-%d %H:%M")
-        end.empty?
-        #devuelve si la lista de appointments para este profesional con fecha posterior a la actual
-        #no es vacía
+        if self.has_appointments?
+          !appointments.select do |appointment|
+            appointment.date > Time.now.strftime("%Y-%m-%d %H:%M")
+          end.empty?
+           #devuelve si la lista de appointments para este profesional con fecha posterior a la actual
+          #no es vacía
+        else
+          false #devuelve que no tiene appointments
+        end
       end
 
       def has_appointments?
@@ -68,7 +72,7 @@ module Polycon
 
       def self.list
         profs = Polycon::Store.professionals()
-        if profs != nil
+        if !profs.nil?
           profs.map do |prof|
             self.find(prof) #retorno las instancias de Professional
           end
