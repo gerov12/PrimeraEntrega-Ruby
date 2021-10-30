@@ -59,10 +59,12 @@ Además, la gracias a la clase Store y el manejo de objetos, ya no es necesario 
 ###### Elecciones de diseño (no definidas en el enunciado original):
 - Los nombres de los archivos HTML que contienen las grillas siguen el siguiente formato: 
   - *Grillas tipo "Week"*:
+  
     Si se seleccionó un profesional → "nombre_yyyy-mm-dd_week.html"
     
     Si no se seleccionó un profesional → "yyyy-mm-dd_week.html"
   - *Grillas tipo "Day"*:
+  
     Si se seleccionó un profesional → "nombre_yyyy-mm-dd_day.html"
     
     Si no se seleccionó un profesional → "yyyy-mm-dd_day.html" 
