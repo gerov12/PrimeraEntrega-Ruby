@@ -31,7 +31,9 @@ Además tanto directorios como archivos sufrieron modificaciónes:
 ###### Directorio commands:
 Se agregó el archivo correspondiente a tables, el cual contiene su respectivo modulo. Este, al igual que todos los archivos de este directorio, forma parte del modulo Commands y contiene una subclase de la clase Command llamada Create, la cual representa al comando (llamado de igual manera) que permite crear un nuevo archivo HTML con la grilla correspondiente según las opciones pasadas al parametro.
 La sintaxis del comando es la siguiente:
-```table (o "t" en su forma abreviada) create "yyyy-mm-dd" --professional="nombre profesional" --type="day/week"```
+```
+table (o "t" en su forma abreviada) create "yyyy-mm-dd" --professional="nombre profesional" --type="day/week"
+```
 La opción `--professional` no es obligatoria, permitiendo (en caso de no utilizarla) mostrar en la grilla resultante los turnos que se correspondan al periodo de tiempo indicado de todos los profesionales existentes en el sistema.
 En cuanto a la opcion `--type`, esta es obligatoria (al igual que el argumento inicial que indica una fecha) y debe ser **"day"** o **"week"**.
 > `"day"` indica que se listarán solo los turnos correspondientes al día indicado.
@@ -54,10 +56,10 @@ Además, la gracias a la clase Store y el manejo de objetos, ya no es necesario 
 
 ###### Elecciones de diseño (no definidas en el enunciado original):
 - Los nombres de los archivos HTML que contienen las grillas siguen el siguiente formato: 
-  - *Grillas tipo "Week":
+  - *Grillas tipo "Week"*:
     Si se seleccionó un profesional → "nombre_yyyy-mm-dd_week.html"
     Si no se seleccionó un profesional → "yyyy-mm-dd_week.html"
-  - *Grillas tipo "Day":
+  - *Grillas tipo "Day"*:
     Si se seleccionó un profesional → "nombre_yyyy-mm-dd_day.html"
     Si no se seleccionó un profesional → "yyyy-mm-dd_day.html" 
 - Se asume que los horarios creados los turnos se encontrarán en un rango horario entre las 8:00hs y las 16:00hs, con una diferencia de 15 minutos entre cada turno (ej: 08:00, 08:15, 08:30, etc.) 
