@@ -2,17 +2,17 @@ module Polycon
     module Commands
       module Tables
         class Create < Dry::CLI::Command
-            desc 'Creates a table which represents a appointments grid'
+            desc 'Creates a table which represents an appointments grid'
 
             argument :date, required: true, desc: 'Date from which the table will be created'
-            option :professional, required: false, desc: 'Professional whom the the displayed appointments will belong'
+            option :professional, required: false, desc: 'Professional to whom the displayed appointments will belong'
             option :type, required: true, desc: 'Indicates if the table correspond to a day or a week'
 
             example [
-                '"2021-09-16" --type="week" # Show all the appointments for the week of 16/9/21',
-                '"2021-09-16" --professional="Alma Estevez" --type="week" # Show all the appointments corresponding to the professional Alma Estevez in the week of 16/9/21',
-                '"2021-09-16" --type="day" # Show all the appointments from 16/9/21',
-                '"2021-09-16" --professional="Alma Estevez" --type="day" # Show all the appointments of 16/9/21 corresponding to the professional Alma Estevez'
+                '"2021-09-16" --type="week" # Shows all the appointments for the week of 16/9/21',
+                '"2021-09-16" --professional="Alma Estevez" --type="week" # Shows all the appointments corresponding to the professional Alma Estevez in the week of 16/9/21',
+                '"2021-09-16" --type="day" # Shows all the appointments from 16/9/21',
+                '"2021-09-16" --professional="Alma Estevez" --type="day" # Shows all the appointments of 16/9/21 corresponding to the professional Alma Estevez'
             ]
 
             def call(date:, professional: nil, type:)
