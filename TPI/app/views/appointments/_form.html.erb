@@ -1,34 +1,38 @@
 <%= form_with(model: [professional, appointment]) do |form| %>
-  <% if appointment.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(appointment.errors.count, "error") %> prohibited this appointment from being saved:</h2>
-
-      <ul>
-        <% appointment.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <div>
+    <p>
+      <h4>Schedule shifts: 8:00 - 16:45</h4>
+      (Each shift lasts 15 minutes)
+    </p>
+  </div>
 
   <div class="field">
     <%= form.label :date %>
     <%= form.datetime_select :date %>
+    <%= error_message(appointment, :date) %>
   </div>
 
   <div class="field">
     <%= form.label :surname %>
     <%= form.text_field :surname %>
+    <%= error_message(appointment, :surname) %>
   </div>
 
   <div class="field">
     <%= form.label :name %>
     <%= form.text_field :name %>
+    <%= error_message(appointment, :name) %>
   </div>
 
   <div class="field">
     <%= form.label :phone %>
     <%= form.number_field :phone %>
+    <%= error_message(appointment, :phone) %>
+  </div>
+
+  <div class="field">
+    <%= form.label :note %>
+    <%= form.text_field :note %>
   </div>
 
   <div class="actions">

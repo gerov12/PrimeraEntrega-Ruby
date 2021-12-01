@@ -49,10 +49,15 @@ class ProfessionalsController < ApplicationController
 
   # DELETE /professionals/1 or /professionals/1.json
   def destroy
-    @professional.destroy
     respond_to do |format|
-      format.html { redirect_to professionals_url, notice: "Professional was successfully destroyed." }
-      format.json { head :no_content }
+      if @professional.can_be_deleted?
+        @professional.destroy
+        format.html { redirect_to professionals_url, notice: "Professional was successfully destroyed." }
+        format.json { head :no_content }
+      else
+        format.html { redirect_to professionals_url, notice: "Professional has appointments. Can't be destroyed." }
+        format.json { head :no_content }
+      end
     end
   end
 

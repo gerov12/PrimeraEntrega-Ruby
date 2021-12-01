@@ -51,10 +51,15 @@ class AppointmentsController < ApplicationController
 
   # DELETE /appointments/1 or /appointments/1.json
   def destroy
-    @appointment.destroy
     respond_to do |format|
-      format.html { redirect_to professional_appointments_url, notice: "Appointment was successfully destroyed." }
-      format.json { head :no_content }
+      if @appointment.can_be_deleted?
+        @appointment.destroy
+        format.html { redirect_to professional_appointments_url, notice: "Appointment was successfully destroyed." }
+        format.json { head :no_content }
+      else
+        format.html { redirect_to professional_appointments_url, notice: "Can't cancel past appointments." }
+        format.json { head :no_content }
+      end
     end
   end
 
@@ -66,7 +71,7 @@ class AppointmentsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def appointment_params
-      params.require(:appointment).permit(:date, :surname, :name, :phone)
+      params.require(:appointment).permit(:date, :surname, :name, :phone, :note)
     end
 
     def set_professional

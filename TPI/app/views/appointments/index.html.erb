@@ -16,7 +16,7 @@
   <tbody>
     <% @appointments.each do |appointment| %>
       <tr>
-        <td><%= I18n.l(appointment.date) %></td>
+        <td><%= appointment.date.strftime("%d/%m/%Y - %H:%M") %></td>
         <td><%= appointment.surname %></td>
         <td><%= appointment.name %></td>
         <td><%= appointment.phone %></td>
@@ -31,4 +31,5 @@
 <br>
 
 <%= link_to 'New Appointment', new_professional_appointment_path(@professional) %>
-<%= link_to 'Cancel all', cancel_all_appointments_professional_path(@professional), method: :delete %>
+<%= link_to 'Cancel all', cancel_all_appointments_professional_path(@professional), method: :delete, data: { confirm: 'Are you sure?' } %>
+<%= link_to 'Back', professionals_path %>
