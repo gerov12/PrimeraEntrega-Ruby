@@ -9,4 +9,8 @@ class Appointment < ApplicationRecord
   def can_be_deleted?
     date > DateTime.now
   end
+
+  def filter(date)
+    
+  end
 end

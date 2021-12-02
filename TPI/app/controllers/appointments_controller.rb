@@ -6,6 +6,27 @@ class AppointmentsController < ApplicationController
   def index
     @appointments = @professional.appointments
     # Solo trae a los appointments que dependan del professional
+
+    if params["commit"] == "Filter"
+      if !params["f(1i)"].empty?
+        @appointments = @appointments.select do |a|
+          print(a.date.to_date.year.to_s == params["f(1i)"])
+          a.date.to_date.year.to_s == params["f(1i)"]
+        end 
+      end
+
+      if !params["f(2i)"].empty?
+        @appointments = @appointments.select do |a|
+          a.date.to_date.month.to_s == params["f(2i)"]
+        end 
+      end
+
+      if !params["f(3i)"].empty?
+        @appointments = @appointments.select do |a|
+          a.date.to_date.day.to_s == params["f(3i)"]
+        end 
+      end
+    end
   end
 
   # GET /appointments/1 or /appointments/1.json

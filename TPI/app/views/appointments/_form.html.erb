@@ -8,7 +8,7 @@
 
   <div class="field">
     <%= form.label :date %>
-    <%= form.datetime_select :date %>
+    <%= form.datetime_select :date, start_year: Date.today.year, minute_step: 15, start_hour: 8, end_hour: 16 %>
     <%= error_message(appointment, :date) %>
   </div>
 

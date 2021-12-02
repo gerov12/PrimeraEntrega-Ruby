@@ -2,6 +2,14 @@
 
 <h1>Appointments</h1>
 
+<%= form_with url: professional_appointments_path(@professional), method: :get do |form| %>
+  <%= form.label :f, "Filter by date:"%>
+  <%= form.date_select :f, include_blank: true %>
+  <%= form.submit 'Filter'%>
+  <%= link_to 'Reset', professional_appointments_path(@professional) %>
+<% end %>
+
+
 <table>
   <thead>
     <tr>
@@ -16,7 +24,7 @@
   <tbody>
     <% @appointments.each do |appointment| %>
       <tr>
-        <td><%= appointment.date.strftime("%d/%m/%Y - %H:%M") %></td>
+        <td><%= appointment.date.strftime("%d/%m/%Y - %H:%Mhs") %></td>
         <td><%= appointment.surname %></td>
         <td><%= appointment.name %></td>
         <td><%= appointment.phone %></td>
