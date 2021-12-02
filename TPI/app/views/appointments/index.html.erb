@@ -2,13 +2,12 @@
 
 <h1>Appointments</h1>
 
-<%= form_with url: professional_appointments_path(@professional), method: :get do |form| %>
+<%= form_for :filters, url: professional_appointments_path(@professional), method: :get do |form| %>
   <%= form.label :f, "Filter by date:"%>
-  <%= form.date_select :f, include_blank: true %>
+  <%= form.date_field :f, include_blank: true, value: @f %>
   <%= form.submit 'Filter'%>
   <%= link_to 'Reset', professional_appointments_path(@professional) %>
 <% end %>
-
 
 <table>
   <thead>
