@@ -23,6 +23,18 @@
   </tbody>
 </table>
 
+<h3>Download appointments grid</h3>
+<%= form_for :grid, url: grid_create_path do |form| %>
+  <%= form.label :date, "Select date:"%>
+  <%= form.date_field :date, include_blank: true %>
+  <%= form.collection_select :professional, @professionals, :id , :name, :include_blank => true%>
+  <%= form.radio_button :type, 'week', :checked => true %> 
+  <%= label :type, 'Week' %>
+  <%= form.radio_button :type, 'day' %>
+  <%= label :type, 'Day' %>
+  <%= form.submit 'Download'%>
+<% end %>
+
 <br>
 
 <%= link_to 'New Professional', new_professional_path %>

@@ -11,7 +11,4 @@ class Appointment < ApplicationRecord
     date > DateTime.now
   end
 
-  def filter(date)
-    
-  end
 end
