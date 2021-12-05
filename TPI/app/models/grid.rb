@@ -14,8 +14,12 @@ class Grid
       aux = Week.create(date, professional)
       filename = aux[1]
       template = aux[0]
-      File.open(Rails.root.join("tmp/#{filename}.html"), "w+") { |file| file.write("#{template}")}
-      Rails.root.join("tmp/#{filename}.html")
+    else
+      aux = Day.create(date, professional)
+      filename = aux[1]
+      template = aux[0]
     end
+    File.open(Rails.root.join("tmp/#{filename}.html"), "w+") { |file| file.write("#{template}")}
+    Rails.root.join("tmp/#{filename}.html")
   end
 end
