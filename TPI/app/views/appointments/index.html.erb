@@ -28,8 +28,10 @@
         <td><%= appointment.name %></td>
         <td><%= appointment.phone %></td>
         <td><%= link_to 'Show', [@professional, appointment] %></td>
-        <td><%= link_to 'Edit', edit_professional_appointment_path(@professional, appointment) %></td>
-        <td><%= link_to 'Cancel', [@professional, appointment], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% if can? :manage, Appointment %>
+          <td><%= link_to 'Edit', edit_professional_appointment_path(@professional, appointment) %></td>
+          <td><%= link_to 'Cancel', [@professional, appointment], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>
@@ -37,6 +39,8 @@
 
 <br>
 
-<%= link_to 'New Appointment', new_professional_appointment_path(@professional) %>
-<%= link_to 'Cancel all', cancel_all_appointments_professional_path(@professional), method: :delete, data: { confirm: 'Are you sure?' } %>
+<% if can? :manage, Appointment %>
+  <%= link_to 'New Appointment', new_professional_appointment_path(@professional) %>
+  <%= link_to 'Cancel all', cancel_all_appointments_professional_path(@professional), method: :delete, data: { confirm: 'Are you sure?' } %>
+<% end %>
 <%= link_to 'Back', professionals_path %>

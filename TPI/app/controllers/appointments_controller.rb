@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
-  before_action :set_professional
-  before_action :set_appointment, only: %i[ show edit update destroy ]
+  load_and_authorize_resource :professional
+  load_and_authorize_resource :appointment, through: :professional
 
   # GET /appointments or /appointments.json
   def index
@@ -71,9 +71,6 @@ class AppointmentsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_appointment
-      @appointment = @professional.appointments.find(params[:id])
-    end
 
     # Only allow a list of trusted parameters through.
     def appointment_params
@@ -86,9 +83,5 @@ class AppointmentsController < ApplicationController
       else
         {}
       end
-    end
-
-    def set_professional
-      @professional = Professional.find(params[:professional_id])
     end
 end

@@ -6,7 +6,6 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-professionals = EventType.create([
-    { name: "Gero" },
-    { name: "Juan" },
-])
+User.create(email: 'consultant@gmail.com', password: '123456')
+User.create(email: 'assistant@gmail.com', password: '123456', role: 1)
+User.create(email: 'administrator@gmail.com', password: '123456', role: 2)
