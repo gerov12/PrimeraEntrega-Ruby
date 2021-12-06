@@ -70,3 +70,16 @@ Además, gracias a la clase Store y el manejo de objetos, ya no es necesario el 
     Si no se seleccionó un profesional → "yyyy-mm-dd_day.html" 
 - Se asume que los horarios de los turnos creados se encontrarán en un rango horario entre las 8:00hs y las 16:00hs, con una diferencia de 15 minutos entre cada turno (ej: 08:00, 08:15, 08:30, etc.) 
 - La semana creada a partir de una fecha al crear una grilla tipo "week" va desde el día lunes al día domingo. Por ejemplo, si la  fecha indicada es "2021-10-30" (sábado), la semana irá desde el lunes 25 hasta el domingo 31.
+
+## TERCERA ENTREGA:
+En esta entrega se mantienen la mayoría de las decisiones de diseño de la anterior, pero se facilitó su implementación gracias al uso de rails.
+Todo el proyecto intenta cumplir con los estandares del framework, por lo que no explicaré cómo hice funcionar cada parte.
+Muchas de las restricciones que habia que tener en cuenta para los comandos de las etapas anteriores ahora se simplifican, ya que limitando las opciones que se le dan al usuario en la aplicación, se evita la carga de datos incorrectos o el uso de acciones a las que no deberían tener acceso si su rol no se los permite. Igualmente, mediante el uso de validaciones se evita que se pueda manipular la información que se envía o las funciones a las que se intentan acceder.
+Para el manejo de sesiones se utilizó la gema **devise**, y para el manejo de roles y restricciones se utilizó la gema **cancancan**
+
+###### Elecciones de diseño:
+- El único cambio de diseño es que todos los appointments ahora pueden ser editados, incluso puede reutilizarse un appointment ya pasado (reprogramarlo para una fecha futura).
+- Los horarios disponibles siguen siendo los mismos (entre las 8:00hs y las 16:00hs, con una diferencia de 15 minutos entre cada turno).
+- En la generación de grillas también se respeta la lógica de la entrega anterior en cuanto a la semana que se muestra.
+
+Todos los archivos de las entregas anteriores fueron eliminados ya que toda la implementación del proyecto está dentro del entorno de rails.
