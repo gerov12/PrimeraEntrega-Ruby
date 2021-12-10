@@ -1,0 +1,22 @@
+<%= form_with(model: user) do |form| %>
+  <div class="field">
+    <%= form.label :email %>
+    <%= form.email_field :email %>
+    <%= error_message(user, :email) %>
+  </div>
+  <div class="field">
+    <%= form.label :role %>
+    <%= form.select :role, User.roles.keys.map {|r| [r.titleize, r]} %>
+    <%= error_message(user, :role) %>
+  </div>
+  <div class="field">
+    <%= form.label :password %>
+    <%= form.password_field :password %>
+    <%= error_message(user, :password) %>
+  </div>
+  
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

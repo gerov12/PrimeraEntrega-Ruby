@@ -42,3 +42,6 @@
 <% if can? :create, Professional %>
   <%= link_to 'New Professional', new_professional_path %>
 <% end %>
+<% if can? :manage, User %>
+  <%= link_to 'Users management', users_path %>
+<% end %>

@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
-  devise_for :users
+  resources :users
+  devise_for :users, :path_prefix => 'auth'
+
   root to: 'professionals#index'
 
   resources :grids
