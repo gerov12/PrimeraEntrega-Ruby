@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   resources :users
-  devise_for :users, :path_prefix => 'auth'
+  devise_for :users, :skip => [:registrations], :path_prefix => 'auth'
 
   root to: 'professionals#index'
 
