@@ -81,5 +81,6 @@ Para el manejo de sesiones se utilizó la gema **devise**, y para el manejo de r
 - El único cambio de diseño es que todos los appointments ahora pueden ser editados, incluso puede reutilizarse un appointment ya pasado (reprogramarlo para una fecha futura).
 - Los horarios disponibles siguen siendo los mismos (entre las 8:00hs y las 16:00hs, con una diferencia de 15 minutos entre cada turno).
 - En la generación de grillas también se respeta la lógica de la entrega anterior en cuanto a la semana que se muestra.
+- Al igual que pasa con los profesionales, solo los administradores pueden gestionar a los usuarios del sistema.
 
 Todos los archivos de las entregas anteriores fueron eliminados ya que toda la implementación del proyecto está dentro del entorno de rails.
