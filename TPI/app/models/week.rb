@@ -59,39 +59,33 @@ class Week < Template
     end
   end
 
+  def self.collect_week_appointments(week, prof)
+    appo = []
+    week.each do |day|
+      appo = appo + collect_day_appointments(day, prof)
+    end
+    appo
+  end
+
   def self.create(date, professional)
       appointments = []
       week = self.get_week(date)
       if professional.blank?
           Professional.all.each do |p|
-              week.each do |day|
-                  aux = p.appointments.filter_by_date(day)
-                  if !aux.empty? #si hay turnos para esa fecha
-                      aux.each {|a| appointments << a}
-                  end
-              end
+            appointments = appointments + self.collect_week_appointments(week, p)
           end
           title = "#{date.gsub("-","/")} week dates"
           filename = "#{date}_week"
       else
           prof = Professional.find(professional)
-
-          week.each do |day|
-              aux = prof.appointments.filter_by_date(day)
-              if !aux.empty? #si hay turnos para esa fecha
-                aux.each {|a| appointments << a}
-              end
-          end
-
+          appointments = appointments + self.collect_week_appointments(week, prof)
           title = "#{date.gsub("-","/")} week dates (professional: #{Professional.find(professional).name})"
           filename = "#{professional}_#{date}_week"
       end
 
       headers = headers(week)
       rows = schedule()
-      #Inicializo los r[1] de cada row
       self.initialize_rows(rows)
-      #Cargo los turnos en la tabla
       self.insert_appointments(rows, appointments, headers)
       create_template(headers,rows, title, filename)
   end

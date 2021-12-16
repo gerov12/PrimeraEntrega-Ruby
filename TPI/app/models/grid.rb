@@ -10,15 +10,14 @@ class Grid
   validates :type, presence: true, inclusion: { in: ['day', 'week'] } 
 
   def generate()
+    puts("holaaaa")
     if type == 'week'
       aux = Week.create(date, professional)
-      filename = aux[1]
-      template = aux[0]
     else
       aux = Day.create(date, professional)
-      filename = aux[1]
-      template = aux[0]
     end
+    filename = aux[1]
+    template = aux[0]
     File.open(Rails.root.join("tmp/#{filename}.html"), "w+") { |file| file.write("#{template}")}
     Rails.root.join("tmp/#{filename}.html")
   end

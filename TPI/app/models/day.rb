@@ -25,29 +25,19 @@ class Day < Template
     appointments = []
     if professional.blank?
       Professional.all.each do |p|
-        aux = p.appointments.filter_by_date(date)
-        if !aux.empty? #si hay turnos para esa fecha
-          aux.each {|a| appointments << a}
-        end
+        appointments = appointments + collect_day_appointments(date, p)
       end
-      title = "Date for #{date.gsub("-","/")}"
+      title = "Dates for #{date.gsub("-","/")}"
       filename = "#{date}_day"
     else
       prof = Professional.find(professional)
-
-      aux = prof.appointments.filter_by_date(date)
-      if !aux.nil? #si hay turnos para esa fecha
-        aux.each {|a| appointments << a}
-      end
-      
+      appointments = appointments + collect_day_appointments(date, prof)
       title = "Dates for #{date.gsub("-","/")} (profesional: #{professional})"
       filename = "#{professional}_#{date}_day"
     end
     headers = ['📜', date.gsub("-","/")]
     rows = schedule()
-    #Inicializo los r[1] de cada row
     self.initialize_rows(rows)
-    #Cargo los turnos en la tabla
     self.insert_appointments(rows, appointments)
     create_template(headers, rows, title, filename)
   end
